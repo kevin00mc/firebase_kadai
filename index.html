@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Chatアプリ</title>
+</head>
+<body>
+
+<!-- コンテンツ表示画面 -->
+<!-- <div>
+    <div>
+        名前: <input type="text" id="uname">
+    </div>
+    <div>
+        <textarea name="" id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+    </div>
+    <div id="output"></div>
+</div> -->
+
+
+<div class="wrapper">
+    <div class="chat-header">
+
+    </div>
+    
+    <div id="chat-area">
+        <ul class="messages" id="output">
+
+        </ul>
+    </div>
+
+    <div class="message-area">
+        <div class="message-area-text">
+            <input type="text" id="uname" placeholder="ユーザー名">
+            <textarea name="" id="text" cols="30" rows="10" placeholder="メッセージを入力"></textarea>
+        </div>
+        <div class="message-area-button">
+            <button id="send">Send</button>
+        </div>
+    </div>
+
+</div>
+<!-- ここまでコンテンツ表示画面 -->
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+<script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-app.js";
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+    import { getDatabase, ref, push, set, onChildAdded, remove, onChildRemoved }
+            from "https://cdnjs.cloudflare.com/ajax/libs/firebase/9.14.0/firebase-database.js";
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBRUA4S_aimVOxqyDSnYarQ5Sw-ccOlb8g",
+      authDomain: "fir-demo-31e26.firebaseapp.com",
+      projectId: "fir-demo-31e26",
+      storageBucket: "fir-demo-31e26.appspot.com",
+      messagingSenderId: "870197189291",
+      appId: "1:870197189291:web:a338e72d22ef87932f75ee"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    const db = getDatabase(app); //Realtime DBに接続
+    const dbRef = ref(db,"chat"); //Realtime DB内のchatを使う
+
+    // データ送信機能の実装 ( push , set )
+    $("#send").on("click", function(){
+        const msg = {
+            uname: $("#uname").val(),
+            text: $("#text").val()
+        };
+        const newPostRef = push(dbRef); // pushできる状態にする キーを発行する
+        set(newPostRef, msg); // DBに値を送信　発行したキーに作成したオブジェクトをセット
+    });
+
+    $("#text").on("keydown", function(e){
+        if (e.keyCode == 13){ //keycode13 = enterが押されたら、以下起動 ※英語だとe.key(CodeじゃなくてKey自体)で指定するという場合もあるが、日本語は通常のEnterと変換確定のEnterがあるので
+            const msg = {
+            uname: $("#uname").val(),
+            text: $("#text").val()
+            };
+            const newPostRef = push(dbRef); 
+            set(newPostRef, msg); 
+        };
+    })
+
+
+    onChildAdded(dbRef, function(data){
+        const msg = data.val();
+        const key = data.key;
+        let h =""; 
+        if (msg.uname == $("#uname").val()){
+            h = `<li><p class="sender_name.me">${msg.uname}</p><p class="right_balloon">${msg.text}</p><p class="clear_balloon"></p></li>`
+        }else {
+            h = `<li><p class="sender_name">${msg.uname}</p><p class="left_balloon">${msg.text}</p><p class="clear_balloon"></p></li>`
+        };
+        console.log(h);
+
+        $("#output").append(h);
+        $("#output")[0].scrollTop = $("#output")[0].scrollHeight; 
+    });
+
+
+</script>
+
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
